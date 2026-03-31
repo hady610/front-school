@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Parents - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Rechercher un parent par nom ou téléphone...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addParentModal">
+                                <i class="fas fa-plus"></i>
+                                Ajouter un Parent
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0">285</h3>
+                            <small class="text-muted">Total Parents</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0">450</h3>
+                            <small class="text-muted">Élèves Liés</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-orange mb-0">1.58</h3>
+                            <small class="text-muted">Enfants / Parent (Moyenne)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alert info -->
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle"></i>
+                <strong>Information :</strong> Les parents sont créés automatiquement lors de l'ajout d'un élève. Vous pouvez modifier leur téléphone ici (cela impactera tous leurs enfants).
+            </div>
+            
+            <!-- Table parents -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Liste des Parents
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom Complet</th>
+                                    <th>Téléphone</th>
+                                    <th>Nb Enfants</th>
+                                    <th>Enfants Scolarisés</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parentsTableBody">
+                                <!-- Sera rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Ajouter Parent -->
+    <div class="modal fade" id="addParentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus"></i>
+                        Ajouter un Parent
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addParentForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="nomParent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="prenomParent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Téléphone *</label>
+                            <input type="tel" class="form-control" id="telephoneParent" placeholder="622 12 34 56" required>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Note :</strong> Le numéro de téléphone doit être unique. Vous pourrez ajouter des élèves à ce parent ensuite.
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Créer le Parent
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Modifier Parent -->
+    <div class="modal fade" id="editParentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit"></i>
+                        Modifier le Parent
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editParentForm">
+                        <input type="hidden" id="editParentId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="editNomParent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="editPrenomParent" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Téléphone *</label>
+                            <input type="tel" class="form-control" id="editTelephoneParent" required>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Attention :</strong> La modification du téléphone impactera tous les SMS envoyés aux enfants liés à ce parent.
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Voir Enfants -->
+    <div class="modal fade" id="viewEnfantsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-child"></i>
+                        Enfants du Parent
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 id="parentNameTitle" class="mb-3"></h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Élève</th>
+                                    <th>Classe</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enfantsTableBody">
+                                <!-- Sera rempli dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Gestion des Parents',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        let fakeParents = [
+            {
+                id: 1,
+                nom: 'Diallo',
+                prenom: 'Amadou',
+                telephone: '622 11 22 33',
+                nb_enfants: 2,
+                enfants: [
+                    { nom: 'Diallo Mamadou', classe: 'CM2-A', statut: 'actif' },
+                    { nom: 'Diallo Fatoumata', classe: 'CE1-A', statut: 'actif' }
+                ]
+            },
+            {
+                id: 2,
+                nom: 'Camara',
+                prenom: 'Fatoumata',
+                telephone: '622 44 55 66',
+                nb_enfants: 1,
+                enfants: [
+                    { nom: 'Camara Ibrahim', classe: 'CE2-A', statut: 'actif' }
+                ]
+            },
+            {
+                id: 3,
+                nom: 'Bah',
+                prenom: 'Ibrahim',
+                telephone: '622 77 88 99',
+                nb_enfants: 3,
+                enfants: [
+                    { nom: 'Bah Aissatou', classe: 'CM1-A', statut: 'actif' },
+                    { nom: 'Bah Mamadou', classe: 'CP-A', statut: 'actif' },
+                    { nom: 'Bah Kadiatou', classe: 'CE2-A', statut: 'inactif' }
+                ]
+            },
+            {
+                id: 4,
+                nom: 'Sy',
+                prenom: 'Mamadou',
+                telephone: '622 33 44 55',
+                nb_enfants: 1,
+                enfants: [
+                    { nom: 'Sy Aissatou', classe: 'CM1-A', statut: 'actif' }
+                ]
+            }
+        ];
+        
+        let filteredParents = [...fakeParents];
+        
+        // ============ RENDER TABLE ============
+        function renderParents() {
+            const tbody = document.getElementById('parentsTableBody');
+            
+            if (filteredParents.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Aucun parent trouvé</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = filteredParents.map(parent => `
+                <tr>
+                    <td><strong>${parent.nom} ${parent.prenom}</strong></td>
+                    <td>
+                        <i class="fas fa-phone text-primary"></i>
+                        ${parent.telephone}
+                    </td>
+                    <td>
+                        <span class="badge bg-info">${parent.nb_enfants}</span>
+                    </td>
+                    <td>
+                        ${parent.enfants.map(e => `
+                            <span class="badge bg-primary me-1">${e.nom} (${e.classe})</span>
+                        `).join('')}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewEnfants(${parent.id})" title="Voir enfants">
+                            <i class="fas fa-child"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editParent(${parent.id})" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteParent(${parent.id})" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredParents = fakeParents.filter(parent => {
+                const fullName = `${parent.nom} ${parent.prenom}`.toLowerCase();
+                const matchName = fullName.includes(search);
+                const matchPhone = parent.telephone.includes(search);
+                return matchName || matchPhone;
+            });
+            
+            renderParents();
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        
+        // ============ ACTIONS ============
+        function viewEnfants(id) {
+            const parent = fakeParents.find(p => p.id === id);
+            
+            document.getElementById('parentNameTitle').textContent = 
+                `Parent : ${parent.nom} ${parent.prenom} (${parent.telephone})`;
+            
+            const tbody = document.getElementById('enfantsTableBody');
+            tbody.innerHTML = parent.enfants.map(enfant => `
+                <tr>
+                    <td><strong>${enfant.nom}</strong></td>
+                    <td><span class="badge bg-primary">${enfant.classe}</span></td>
+                    <td>
+                        <span class="badge ${enfant.statut === 'actif' ? 'badge-success' : 'badge-warning'}">
+                            ${enfant.statut === 'actif' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="goToEleve('${enfant.nom}')">
+                            <i class="fas fa-eye"></i> Voir
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            new bootstrap.Modal(document.getElementById('viewEnfantsModal')).show();
+        }
+        
+        function goToEleve(nom) {
+            window.location.href = `eleves.html?search=${encodeURIComponent(nom)}`;
+        }
+        
+        function editParent(id) {
+            const parent = fakeParents.find(p => p.id === id);
+            
+            document.getElementById('editParentId').value = parent.id;
+            document.getElementById('editNomParent').value = parent.nom;
+            document.getElementById('editPrenomParent').value = parent.prenom;
+            document.getElementById('editTelephoneParent').value = parent.telephone;
+            
+            new bootstrap.Modal(document.getElementById('editParentModal')).show();
+        }
+        
+        function deleteParent(id) {
+            const parent = fakeParents.find(p => p.id === id);
+            
+            if (parent.nb_enfants > 0) {
+                alert(`Impossible de supprimer ce parent car il a ${parent.nb_enfants} enfant(s) scolarisé(s). Supprimez d'abord les élèves.`);
+                return;
+            }
+            
+            if (confirm('Voulez-vous vraiment supprimer ce parent ?')) {
+                const index = fakeParents.findIndex(p => p.id === id);
+                fakeParents.splice(index, 1);
+                applyFilters();
+                showToast('Parent supprimé avec succès', 'success');
+            }
+        }
+        
+        // ============ FORMS ============
+        document.getElementById('addParentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const telephone = document.getElementById('telephoneParent').value;
+            
+            if (fakeParents.some(p => p.telephone === telephone)) {
+                alert('Ce numéro de téléphone existe déjà !');
+                return;
+            }
+            
+            const newParent = {
+                id: fakeParents.length + 1,
+                nom: document.getElementById('nomParent').value,
+                prenom: document.getElementById('prenomParent').value,
+                telephone: telephone,
+                nb_enfants: 0,
+                enfants: []
+            };
+            
+            fakeParents.push(newParent);
+            
+            bootstrap.Modal.getInstance(document.getElementById('addParentModal')).hide();
+            this.reset();
+            
+            applyFilters();
+            showToast('Parent créé avec succès !', 'success');
+        });
+        
+        document.getElementById('editParentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editParentId').value);
+            const parent = fakeParents.find(p => p.id === id);
+            
+            parent.nom = document.getElementById('editNomParent').value;
+            parent.prenom = document.getElementById('editPrenomParent').value;
+            parent.telephone = document.getElementById('editTelephoneParent').value;
+            
+            bootstrap.Modal.getInstance(document.getElementById('editParentModal')).hide();
+            
+            applyFilters();
+            showToast('Parent modifié avec succès ! Les SMS seront envoyés au nouveau numéro.', 'success');
+        });
+        
+        // ============ INIT ============
+        renderParents();
+    </script>
+</body>
+</html>

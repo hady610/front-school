@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Classes - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Rechercher une classe...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterNiveau">
+                                <option value="">Tous les niveaux</option>
+                                <option value="CP">CP</option>
+                                <option value="CE1">CE1</option>
+                                <option value="CE2">CE2</option>
+                                <option value="CM1">CM1</option>
+                                <option value="CM2">CM2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addClasseModal">
+                                <i class="fas fa-plus"></i>
+                                Ajouter une Classe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0">12</h3>
+                            <small class="text-muted">Total Classes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0">450</h3>
+                            <small class="text-muted">Total Élèves</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-orange mb-0">37.5</h3>
+                            <small class="text-muted">Moyenne / Classe</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-blue mb-0">92%</h3>
+                            <small class="text-muted">Taux Présence Moyen</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grille classes -->
+            <div class="row" id="classesGrid">
+                <!-- Sera rempli par JS -->
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Ajouter Classe -->
+    <div class="modal fade" id="addClasseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-chalkboard"></i>
+                        Ajouter une Classe
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClasseForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom de la Classe *</label>
+                                <input type="text" class="form-control" id="nomClasse" placeholder="Ex: CP-A" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Niveau *</label>
+                                <select class="form-select" id="niveauClasse" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="CP">CP</option>
+                                    <option value="CE1">CE1</option>
+                                    <option value="CE2">CE2</option>
+                                    <option value="CM1">CM1</option>
+                                    <option value="CM2">CM2</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Capacité Maximale</label>
+                                <input type="number" class="form-control" id="capaciteClasse" value="40">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Salle</label>
+                                <input type="text" class="form-control" id="salleClasse" placeholder="Ex: Salle 101">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="revisionActivee">
+                                <label class="form-check-label" for="revisionActivee">
+                                    Activer les révisions (4 scans par jour)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Les élèves seront ajoutés à cette classe via la page "Gestion Élèves".
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Créer la Classe
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Modifier Classe -->
+    <div class="modal fade" id="editClasseModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit"></i>
+                        Modifier la Classe
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editClasseForm">
+                        <input type="hidden" id="editClasseId">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom de la Classe *</label>
+                                <input type="text" class="form-control" id="editNomClasse" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Niveau *</label>
+                                <select class="form-select" id="editNiveauClasse" required>
+                                    <option value="CP">CP</option>
+                                    <option value="CE1">CE1</option>
+                                    <option value="CE2">CE2</option>
+                                    <option value="CM1">CM1</option>
+                                    <option value="CM2">CM2</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Capacité Maximale</label>
+                                <input type="number" class="form-control" id="editCapaciteClasse">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Salle</label>
+                                <input type="text" class="form-control" id="editSalleClasse">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editRevisionActivee">
+                                <label class="form-check-label" for="editRevisionActivee">
+                                    Activer les révisions (4 scans par jour)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Gestion des Classes',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        let fakeClasses = [
+            {
+                id: 1,
+                nom: 'CP-A',
+                niveau: 'CP',
+                nb_eleves: 35,
+                capacite: 40,
+                salle: 'Salle 101',
+                taux_presence: 94,
+                revision_activee: false
+            },
+            {
+                id: 2,
+                nom: 'CE1-A',
+                niveau: 'CE1',
+                nb_eleves: 38,
+                capacite: 40,
+                salle: 'Salle 102',
+                taux_presence: 92,
+                revision_activee: false
+            },
+            {
+                id: 3,
+                nom: 'CE2-A',
+                niveau: 'CE2',
+                nb_eleves: 40,
+                capacite: 40,
+                salle: 'Salle 103',
+                taux_presence: 91,
+                revision_activee: true
+            },
+            {
+                id: 4,
+                nom: 'CM1-A',
+                niveau: 'CM1',
+                nb_eleves: 42,
+                capacite: 45,
+                salle: 'Salle 201',
+                taux_presence: 89,
+                revision_activee: true
+            },
+            {
+                id: 5,
+                nom: 'CM2-A',
+                niveau: 'CM2',
+                nb_eleves: 38,
+                capacite: 40,
+                salle: 'Salle 202',
+                taux_presence: 95,
+                revision_activee: true
+            }
+        ];
+        
+        let filteredClasses = [...fakeClasses];
+        
+        // ============ RENDER GRID ============
+        function renderClasses() {
+            const grid = document.getElementById('classesGrid');
+            
+            if (filteredClasses.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-chalkboard fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Aucune classe trouvée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredClasses.map(classe => {
+                const pourcentage = Math.round((classe.nb_eleves / classe.capacite) * 100);
+                const colorProgress = pourcentage > 90 ? 'bg-danger' : pourcentage > 70 ? 'bg-warning' : 'bg-success';
+                
+                return `
+                <div class="col-md-6 col-lg-4 mb-4 fade-in">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1">${classe.nom}</h5>
+                                    <span class="badge bg-primary">${classe.niveau}</span>
+                                </div>
+                                ${classe.revision_activee ? '<span class="badge badge-info">Révision</span>' : ''}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted d-block"><i class="fas fa-door-open"></i> ${classe.salle}</small>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-users"></i> 
+                                    ${classe.nb_eleves} / ${classe.capacite} élèves (${pourcentage}%)
+                                </small>
+                            </div>
+                            
+                            <div class="progress mb-3" style="height: 8px;">
+                                <div class="progress-bar ${colorProgress}" style="width: ${pourcentage}%"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <small class="text-muted">Taux présence</small>
+                                <strong class="text-success">${classe.taux_presence}%</strong>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-primary flex-fill" onclick="viewClasse(${classe.id})">
+                                    <i class="fas fa-eye"></i> Voir
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="editClasse(${classe.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteClasse(${classe.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const niveau = document.getElementById('filterNiveau').value;
+            
+            filteredClasses = fakeClasses.filter(classe => {
+                const matchSearch = classe.nom.toLowerCase().includes(search);
+                const matchNiveau = !niveau || classe.niveau === niveau;
+                return matchSearch && matchNiveau;
+            });
+            
+            renderClasses();
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterNiveau').addEventListener('change', applyFilters);
+        
+        // ============ ACTIONS ============
+        function viewClasse(id) {
+            window.location.href = `eleves.html?classe=${id}`;
+        }
+        
+        function editClasse(id) {
+            const classe = fakeClasses.find(c => c.id === id);
+            
+            document.getElementById('editClasseId').value = classe.id;
+            document.getElementById('editNomClasse').value = classe.nom;
+            document.getElementById('editNiveauClasse').value = classe.niveau;
+            document.getElementById('editCapaciteClasse').value = classe.capacite;
+            document.getElementById('editSalleClasse').value = classe.salle;
+            document.getElementById('editRevisionActivee').checked = classe.revision_activee;
+            
+            new bootstrap.Modal(document.getElementById('editClasseModal')).show();
+        }
+        
+        function deleteClasse(id) {
+            if (confirm('Voulez-vous vraiment supprimer cette classe ?')) {
+                const index = fakeClasses.findIndex(c => c.id === id);
+                fakeClasses.splice(index, 1);
+                applyFilters();
+                showToast('Classe supprimée avec succès', 'success');
+            }
+        }
+        
+        // ============ FORMS ============
+        document.getElementById('addClasseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newClasse = {
+                id: fakeClasses.length + 1,
+                nom: document.getElementById('nomClasse').value,
+                niveau: document.getElementById('niveauClasse').value,
+                nb_eleves: 0,
+                capacite: parseInt(document.getElementById('capaciteClasse').value),
+                salle: document.getElementById('salleClasse').value,
+                taux_presence: 0,
+                revision_activee: document.getElementById('revisionActivee').checked
+            };
+            
+            fakeClasses.push(newClasse);
+            
+            bootstrap.Modal.getInstance(document.getElementById('addClasseModal')).hide();
+            this.reset();
+            
+            applyFilters();
+            showToast('Classe créée avec succès !', 'success');
+        });
+        
+        document.getElementById('editClasseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editClasseId').value);
+            const classe = fakeClasses.find(c => c.id === id);
+            
+            classe.nom = document.getElementById('editNomClasse').value;
+            classe.niveau = document.getElementById('editNiveauClasse').value;
+            classe.capacite = parseInt(document.getElementById('editCapaciteClasse').value);
+            classe.salle = document.getElementById('editSalleClasse').value;
+            classe.revision_activee = document.getElementById('editRevisionActivee').checked;
+            
+            bootstrap.Modal.getInstance(document.getElementById('editClasseModal')).hide();
+            
+            applyFilters();
+            showToast('Classe modifiée avec succès !', 'success');
+        });
+        
+        // ============ INIT ============
+        renderClasses();
+    </script>
+</body>
+</html>

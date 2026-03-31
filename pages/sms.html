@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique SMS - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Filtres -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label">Période</label>
+                            <select class="form-select" id="filterPeriode">
+                                <option value="today">Aujourd'hui</option>
+                                <option value="week" selected>Cette semaine</option>
+                                <option value="month">Ce mois</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Type SMS</label>
+                            <select class="form-select" id="filterType">
+                                <option value="">Tous les types</option>
+                                <option value="absence">Absence</option>
+                                <option value="retard">Retard</option>
+                                <option value="sortie">Sortie</option>
+                                <option value="revision">Révision</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Statut</label>
+                            <select class="form-select" id="filterStatut">
+                                <option value="">Tous les statuts</option>
+                                <option value="delivre">Délivrés</option>
+                                <option value="attente">En attente</option>
+                                <option value="echoue">Échoués</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-success w-100" onclick="exportCSV()">
+                                <i class="fas fa-file-csv"></i>
+                                Exporter CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card fade-in">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>Total Envoyés</h6>
+                                <div class="stat-value">1,250</div>
+                                <p class="stat-label">Ce mois</p>
+                            </div>
+                            <div class="stat-icon blue">
+                                <i class="fas fa-sms"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card fade-in" style="animation-delay: 0.1s">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>Délivrés</h6>
+                                <div class="stat-value text-success">1,180</div>
+                                <p class="stat-label">94.4%</p>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card fade-in" style="animation-delay: 0.2s">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>En Attente</h6>
+                                <div class="stat-value text-warning">50</div>
+                                <p class="stat-label">4%</p>
+                            </div>
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card fade-in" style="animation-delay: 0.3s">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>Échoués</h6>
+                                <div class="stat-value text-danger">20</div>
+                                <p class="stat-label">1.6%</p>
+                            </div>
+                            <div class="stat-icon red">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphique -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                Évolution des SMS (7 derniers jours)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartSMS" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Répartition par Type
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartTypes" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table SMS -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-list"></i>
+                        Historique des SMS
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Filtres rapides tableau -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="searchEleve" 
+                                       placeholder="Rechercher un élève...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="searchTelephone" 
+                                   placeholder="Rechercher par téléphone...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="tableFilterType">
+                                <option value="">Tous les types</option>
+                                <option value="absence">Absence</option>
+                                <option value="retard">Retard</option>
+                                <option value="sortie">Sortie</option>
+                                <option value="revision">Révision</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="tableFilterStatut">
+                                <option value="">Tous les statuts</option>
+                                <option value="delivre">Délivrés</option>
+                                <option value="attente">En attente</option>
+                                <option value="echoue">Échoués</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date/Heure</th>
+                                    <th>Destinataire</th>
+                                    <th>Élève</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Statut</th>
+                                    <th>Coût</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="smsTableBody">
+                                <!-- Sera rempli par JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Détails SMS -->
+    <div class="modal fade" id="smsDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-info-circle"></i>
+                        Détails du SMS
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Date/Heure :</strong></div>
+                        <div class="col-6" id="detailDate"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Destinataire :</strong></div>
+                        <div class="col-6" id="detailDestinataire"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Élève :</strong></div>
+                        <div class="col-6" id="detailEleve"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Type :</strong></div>
+                        <div class="col-6" id="detailType"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Statut :</strong></div>
+                        <div class="col-6" id="detailStatut"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6"><strong>Coût :</strong></div>
+                        <div class="col-6" id="detailCout"></div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <strong>Message :</strong>
+                        <div class="alert alert-light mt-2" id="detailMessage"></div>
+                    </div>
+                    <div id="detailTentatives">
+                        <strong>Tentatives d'envoi :</strong>
+                        <ul class="mt-2" id="detailTentativesList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Historique SMS',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        const fakeSMS = [
+            {
+                id: 1,
+                date: '2025-03-15 08:45',
+                destinataire: '622 11 22 33',
+                eleve: 'Diallo Mamadou',
+                type: 'absence',
+                message: 'Votre enfant Diallo Mamadou (CM2-A) est absent aujourd\'hui.',
+                statut: 'delivre',
+                cout: '25 GNF',
+                tentatives: [
+                    { heure: '08:45:12', resultat: 'Délivré' }
+                ]
+            },
+            {
+                id: 2,
+                date: '2025-03-15 09:15',
+                destinataire: '622 44 55 66',
+                eleve: 'Camara Fatoumata',
+                type: 'retard',
+                message: 'Votre enfant Camara Fatoumata (CE2-A) est arrivé en retard à 09:15.',
+                statut: 'delivre',
+                cout: '25 GNF',
+                tentatives: [
+                    { heure: '09:15:08', resultat: 'Délivré' }
+                ]
+            },
+            {
+                id: 3,
+                date: '2025-03-15 12:30',
+                destinataire: '622 77 88 99',
+                eleve: 'Bah Ibrahima',
+                type: 'sortie',
+                message: 'Votre enfant Bah Ibrahima (CP-A) est sorti à 12:30.',
+                statut: 'attente',
+                cout: '25 GNF',
+                tentatives: [
+                    { heure: '12:30:05', resultat: 'En attente...' }
+                ]
+            },
+            {
+                id: 4,
+                date: '2025-03-14 08:50',
+                destinataire: '622 33 44 55',
+                eleve: 'Sy Aissatou',
+                type: 'absence',
+                message: 'Votre enfant Sy Aissatou (CM1-A) est absent aujourd\'hui.',
+                statut: 'echoue',
+                cout: '0 GNF',
+                tentatives: [
+                    { heure: '08:50:10', resultat: 'Échec - Numéro invalide' },
+                    { heure: '08:51:15', resultat: 'Échec - Numéro invalide' },
+                    { heure: '08:52:20', resultat: 'Échec - Numéro invalide' }
+                ]
+            }
+        ];
+        
+        let filteredSMS = [...fakeSMS];
+        
+        // ============ GRAPHIQUES ============
+        function loadCharts() {
+            // Graphique évolution
+            const ctx1 = document.getElementById('chartSMS').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Auj'],
+                    datasets: [{
+                        label: 'SMS envoyés',
+                        data: [45, 52, 48, 60, 55, 0, 38],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } }
+                }
+            });
+            
+            // Graphique types
+            const ctx2 = document.getElementById('chartTypes').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Absence', 'Retard', 'Sortie', 'Révision'],
+                    datasets: [{
+                        data: [580, 320, 280, 70],
+                        backgroundColor: ['#ef4444', '#fbbf24', '#3b82f6', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+        
+        // ============ RENDER TABLE ============
+        function renderSMS() {
+            const tbody = document.getElementById('smsTableBody');
+            
+            if (filteredSMS.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-search fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Aucun SMS trouvé avec ces critères</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = filteredSMS.map(sms => `
+                <tr>
+                    <td><small>${sms.date}</small></td>
+                    <td>${sms.destinataire}</td>
+                    <td><strong>${sms.eleve}</strong></td>
+                    <td>
+                        ${sms.type === 'absence' ? '<span class="badge badge-danger">Absence</span>' : ''}
+                        ${sms.type === 'retard' ? '<span class="badge badge-warning">Retard</span>' : ''}
+                        ${sms.type === 'sortie' ? '<span class="badge badge-info">Sortie</span>' : ''}
+                        ${sms.type === 'revision' ? '<span class="badge badge-success">Révision</span>' : ''}
+                    </td>
+                    <td><small>${sms.message.substring(0, 50)}...</small></td>
+                    <td>
+                        ${sms.statut === 'delivre' ? '<span class="badge badge-success">Délivré</span>' : ''}
+                        ${sms.statut === 'attente' ? '<span class="badge badge-warning">En attente</span>' : ''}
+                        ${sms.statut === 'echoue' ? '<span class="badge badge-danger">Échoué</span>' : ''}
+                    </td>
+                    <td><small class="text-muted">${sms.cout}</small></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewSMSDetails(${sms.id})" title="Voir détails">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${sms.statut === 'echoue' ? `
+                            <button class="btn btn-sm btn-outline-success" onclick="retrySMS(${sms.id})" title="Renvoyer">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const searchEleve = document.getElementById('searchEleve').value.toLowerCase();
+            const searchTelephone = document.getElementById('searchTelephone').value.replace(/\s/g, '');
+            const type = document.getElementById('tableFilterType').value;
+            const statut = document.getElementById('tableFilterStatut').value;
+            
+            filteredSMS = fakeSMS.filter(sms => {
+                const matchEleve = sms.eleve.toLowerCase().includes(searchEleve);
+                const matchTelephone = sms.destinataire.replace(/\s/g, '').includes(searchTelephone);
+                const matchType = !type || sms.type === type;
+                const matchStatut = !statut || sms.statut === statut;
+                return matchEleve && matchTelephone && matchType && matchStatut;
+            });
+            
+            renderSMS();
+        }
+        
+        // Événements filtres tableau
+        document.getElementById('searchEleve').addEventListener('input', applyFilters);
+        document.getElementById('searchTelephone').addEventListener('input', applyFilters);
+        document.getElementById('tableFilterType').addEventListener('change', applyFilters);
+        document.getElementById('tableFilterStatut').addEventListener('change', applyFilters);
+        
+        // Synchronisation filtres du haut avec filtres tableau
+        document.getElementById('filterType').addEventListener('change', function() {
+            document.getElementById('tableFilterType').value = this.value;
+            applyFilters();
+        });
+        document.getElementById('filterStatut').addEventListener('change', function() {
+            document.getElementById('tableFilterStatut').value = this.value;
+            applyFilters();
+        });
+        
+        // ============ ACTIONS ============
+        function viewSMSDetails(id) {
+            const sms = fakeSMS.find(s => s.id === id);
+            
+            // Remplir modal
+            document.getElementById('detailDate').textContent = sms.date;
+            document.getElementById('detailDestinataire').textContent = sms.destinataire;
+            document.getElementById('detailEleve').textContent = sms.eleve;
+            
+            // Type avec badge coloré
+            const typeBadges = {
+                'absence': '<span class="badge badge-danger">Absence</span>',
+                'retard': '<span class="badge badge-warning">Retard</span>',
+                'sortie': '<span class="badge badge-info">Sortie</span>',
+                'revision': '<span class="badge badge-success">Révision</span>'
+            };
+            document.getElementById('detailType').innerHTML = typeBadges[sms.type];
+            
+            // Statut avec badge
+            const statutBadges = {
+                'delivre': '<span class="badge badge-success">Délivré</span>',
+                'attente': '<span class="badge badge-warning">En attente</span>',
+                'echoue': '<span class="badge badge-danger">Échoué</span>'
+            };
+            document.getElementById('detailStatut').innerHTML = statutBadges[sms.statut];
+            
+            document.getElementById('detailCout').textContent = sms.cout;
+            document.getElementById('detailMessage').textContent = sms.message;
+            
+            // Tentatives
+            const tentativesList = sms.tentatives.map(t => 
+                `<li><strong>${t.heure}</strong> : ${t.resultat}</li>`
+            ).join('');
+            document.getElementById('detailTentativesList').innerHTML = tentativesList;
+            
+            new bootstrap.Modal(document.getElementById('smsDetailsModal')).show();
+        }
+        
+        function retrySMS(id) {
+            if (confirm('Voulez-vous vraiment renvoyer ce SMS ?')) {
+                showToast('Renvoi du SMS en cours...', 'info');
+                setTimeout(() => {
+                    showToast('SMS renvoyé avec succès !', 'success');
+                    // Mettre à jour le statut
+                    const sms = fakeSMS.find(s => s.id === id);
+                    sms.statut = 'delivre';
+                    sms.cout = '25 GNF';
+                    sms.tentatives.push({ 
+                        heure: new Date().toLocaleTimeString('fr-FR'), 
+                        resultat: 'Délivré' 
+                    });
+                    renderSMS();
+                }, 1500);
+            }
+        }
+        
+        function exportCSV() {
+            showToast('Export CSV en cours...', 'info');
+            
+            // Générer CSV avec filtres appliqués
+            let csv = 'Date/Heure,Destinataire,Élève,Type,Message,Statut,Coût\n';
+            filteredSMS.forEach(sms => {
+                csv += `"${sms.date}","${sms.destinataire}","${sms.eleve}","${sms.type}","${sms.message}","${sms.statut}","${sms.cout}"\n`;
+            });
+            
+            // Télécharger
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sms_export_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            setTimeout(() => {
+                showToast(`Fichier CSV généré avec succès ! (${filteredSMS.length} SMS)`, 'success');
+            }, 500);
+        }
+        
+        // ============ INIT ============
+        loadCharts();
+        renderSMS();
+    </script>
+</body>
+</html>

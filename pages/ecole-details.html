@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails École - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Retour -->
+            <div class="mb-3">
+                <a href="ecoles.html" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à la liste
+                </a>
+            </div>
+            
+            <!-- Header École -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="logo-circle" style="width:80px; height:80px;">
+                                    <i class="fas fa-school" style="font-size:40px;"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-1" id="ecoleNom">-</h3>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <span class="badge bg-primary" id="ecoleCode">-</span>
+                                        <span class="badge" id="ecoleStatut">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-warning" onclick="openEditModal()">
+                                <i class="fas fa-edit"></i>
+                                Modifier
+                            </button>
+                            <button class="btn btn-danger" id="btnToggleStatut" onclick="toggleStatut()">
+                                <i class="fas fa-ban"></i>
+                                Suspendre
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Infos générales -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                Informations Générales
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td width="40%"><strong>Code École :</strong></td>
+                                    <td id="infoCode">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ville :</strong></td>
+                                    <td id="infoVille">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Adresse :</strong></td>
+                                    <td id="infoAdresse">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Téléphone :</strong></td>
+                                    <td id="infoTelephone">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email :</strong></td>
+                                    <td id="infoEmail">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date de création :</strong></td>
+                                    <td id="infoDate">-</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Statistiques
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6 mb-3">
+                                    <h2 class="text-primary mb-0" id="statEleves">0</h2>
+                                    <small class="text-muted">Élèves</small>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <h2 class="text-orange mb-0" id="statClasses">0</h2>
+                                    <small class="text-muted">Classes</small>
+                                </div>
+                                <div class="col-6">
+                                    <h2 class="text-green mb-0" id="statSMS">0</h2>
+                                    <small class="text-muted">SMS ce mois</small>
+                                </div>
+                                <div class="col-6">
+                                    <h2 class="text-blue mb-0" id="statTauxPresence">0%</h2>
+                                    <small class="text-muted">Taux présence</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphiques -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                Évolution des Effectifs
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartEffectifs" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Répartition par Classe
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartClasses" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compte Admin -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-shield"></i>
+                        Compte Administrateur École
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="mb-2"><strong>Email de connexion :</strong></p>
+                            <p class="text-muted" id="adminEmail">-</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-2"><strong>Dernière connexion :</strong></p>
+                            <p class="text-muted" id="adminLastLogin">-</p>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-warning btn-sm" onclick="resetAdminPassword()">
+                                <i class="fas fa-key"></i>
+                                Réinitialiser mot de passe
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'super_admin',
+            pageTitle: 'Détails de l\'École'
+        });
+        
+        // ============ DONNÉES FAKE ============
+        const fakeEcoles = [
+            {
+                id: 1,
+                code: 'LAVO2025',
+                nom: 'École Lavoisier',
+                ville: 'Conakry',
+                adresse: 'Quartier Kaloum, Avenue de la République',
+                telephone: '622 12 34 56',
+                email: 'contact@lavoisier.gn',
+                nb_eleves: 450,
+                nb_classes: 12,
+                statut: 'active',
+                date_creation: '2024-09-01',
+                sms_mois: 1250,
+                taux_presence: 94,
+                admin_email: 'admin@lavo2025.schoolconnect.gn',
+                admin_last_login: '2025-03-15 09:30'
+            },
+            {
+                id: 2,
+                code: 'VOLT2025',
+                nom: 'École Voltaire',
+                ville: 'Conakry',
+                adresse: 'Quartier Matam, Rue KA-015',
+                telephone: '622 98 76 54',
+                email: 'contact@voltaire.gn',
+                nb_eleves: 320,
+                nb_classes: 10,
+                statut: 'active',
+                date_creation: '2024-10-15',
+                sms_mois: 890,
+                taux_presence: 91,
+                admin_email: 'admin@volt2025.schoolconnect.gn',
+                admin_last_login: '2025-03-14 16:20'
+            }
+        ];
+        
+        // Récupérer l'ID depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ecoleId = parseInt(urlParams.get('id')) || 1;
+        const ecole = fakeEcoles.find(e => e.id === ecoleId) || fakeEcoles[0];
+        
+        // ============ AFFICHAGE ============
+        function loadEcoleDetails() {
+            // Header
+            document.getElementById('ecoleNom').textContent = ecole.nom;
+            document.getElementById('ecoleCode').textContent = ecole.code;
+            
+            const badgeStatut = document.getElementById('ecoleStatut');
+            badgeStatut.textContent = ecole.statut === 'active' ? 'Active' : 'Suspendue';
+            badgeStatut.className = ecole.statut === 'active' ? 'badge badge-success' : 'badge badge-danger';
+            
+            // Bouton toggle
+            const btnToggle = document.getElementById('btnToggleStatut');
+            if (ecole.statut === 'active') {
+                btnToggle.innerHTML = '<i class="fas fa-ban"></i> Suspendre';
+                btnToggle.className = 'btn btn-danger';
+            } else {
+                btnToggle.innerHTML = '<i class="fas fa-check"></i> Réactiver';
+                btnToggle.className = 'btn btn-success';
+            }
+            
+            // Infos générales
+            document.getElementById('infoCode').textContent = ecole.code;
+            document.getElementById('infoVille').textContent = ecole.ville;
+            document.getElementById('infoAdresse').textContent = ecole.adresse;
+            document.getElementById('infoTelephone').textContent = ecole.telephone;
+            document.getElementById('infoEmail').textContent = ecole.email;
+            document.getElementById('infoDate').textContent = formatDate(ecole.date_creation);
+            
+            // Stats
+            document.getElementById('statEleves').textContent = ecole.nb_eleves;
+            document.getElementById('statClasses').textContent = ecole.nb_classes;
+            document.getElementById('statSMS').textContent = formatNumber(ecole.sms_mois);
+            document.getElementById('statTauxPresence').textContent = ecole.taux_presence + '%';
+            
+            // Admin
+            document.getElementById('adminEmail').textContent = ecole.admin_email;
+            document.getElementById('adminLastLogin').textContent = ecole.admin_last_login;
+        }
+        
+        function loadCharts() {
+            // Graphique Effectifs
+            const ctx1 = document.getElementById('chartEffectifs').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Sept', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév'],
+                    datasets: [{
+                        label: 'Nombre d\'élèves',
+                        data: [420, 430, 435, 445, 448, 450],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+            
+            // Graphique Classes
+            const ctx2 = document.getElementById('chartClasses').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6ème'],
+                    datasets: [{
+                        data: [80, 75, 70, 85, 80, 60],
+                        backgroundColor: [
+                            '#f97316',
+                            '#3b82f6',
+                            '#10b981',
+                            '#fbbf24',
+                            '#ef4444',
+                            '#8b5cf6'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function openEditModal() {
+            alert('Ouverture du formulaire de modification...');
+        }
+        
+        function toggleStatut() {
+            const action = ecole.statut === 'active' ? 'suspendre' : 'réactiver';
+            if (confirm(`Voulez-vous ${action} cette école ?`)) {
+                ecole.statut = ecole.statut === 'active' ? 'suspendue' : 'active';
+                loadEcoleDetails();
+                showToast(`École ${action === 'suspendre' ? 'suspendue' : 'réactivée'} avec succès`, 'success');
+            }
+        }
+        
+        function resetAdminPassword() {
+            if (confirm('Voulez-vous réinitialiser le mot de passe de l\'administrateur ?\n\nLe nouveau mot de passe sera le code de l\'école.')) {
+                showToast(`Mot de passe réinitialisé : ${ecole.code}`, 'success');
+            }
+        }
+        
+        // ============ INIT ============
+        loadEcoleDetails();
+        loadCharts();
+    </script>
+</body>
+</html>

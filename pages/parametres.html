@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres Système - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Onglets -->
+            <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="sms-tab" data-bs-toggle="tab" data-bs-target="#sms" type="button">
+                        <i class="fas fa-sms"></i> Configuration SMS
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button">
+                        <i class="fas fa-envelope"></i> Configuration Email
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button">
+                        <i class="fas fa-cog"></i> Paramètres Système
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button">
+                        <i class="fas fa-shield-alt"></i> Sécurité
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="settingsTabContent">
+                
+                <!-- TAB 1: Configuration SMS -->
+                <div class="tab-pane fade show active" id="sms" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-sms"></i>
+                                Configuration du Service SMS
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSMS">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Fournisseur SMS *</label>
+                                        <select class="form-select" id="smsProvider">
+                                            <option value="simulation">Simulation (Test)</option>
+                                            <option value="africastalking" selected>Africa's Talking</option>
+                                            <option value="orange">Orange Guinea</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Statut du Service</label>
+                                        <select class="form-select" id="smsStatus">
+                                            <option value="active">Actif</option>
+                                            <option value="inactive">Inactif</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <strong><i class="fas fa-info-circle"></i> Fournisseur actuel : Africa's Talking</strong>
+                                    <p class="mb-0 mt-2">Configuration nécessaire selon le fournisseur choisi.</p>
+                                </div>
+                                
+                                <div id="configAfricastalking">
+                                    <h6 class="mb-3">Configuration Africa's Talking</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Username (API)</label>
+                                            <input type="text" class="form-control" id="atUsername" value="schoolconnect_gn">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">API Key</label>
+                                            <input type="password" class="form-control" id="atApiKey" value="••••••••••••••••">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Sender ID</label>
+                                            <input type="text" class="form-control" id="atSenderId" value="SchoolCnct">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">Statistiques SMS</h6>
+                                <div class="row text-center">
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h3 class="text-primary mb-0">3,250</h3>
+                                                <small class="text-muted">SMS ce mois</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h3 class="text-success mb-0">3,180</h3>
+                                                <small class="text-muted">Délivrés</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h3 class="text-warning mb-0">50</h3>
+                                                <small class="text-muted">En attente</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h3 class="text-danger mb-0">20</h3>
+                                                <small class="text-muted">Échoués</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Enregistrer la Configuration SMS
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="testSMS()">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Envoyer un SMS de Test
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB 2: Configuration Email -->
+                <div class="tab-pane fade" id="email" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-envelope"></i>
+                                Configuration du Service Email
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formEmail">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Serveur SMTP</label>
+                                        <input type="text" class="form-control" id="smtpHost" value="smtp.gmail.com">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Port SMTP</label>
+                                        <input type="number" class="form-control" id="smtpPort" value="587">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email Expéditeur</label>
+                                        <input type="email" class="form-control" id="emailFrom" value="noreply@schoolconnect.gn">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nom Expéditeur</label>
+                                        <input type="text" class="form-control" id="emailName" value="SchoolConnect Guinea">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Identifiant SMTP</label>
+                                        <input type="text" class="form-control" id="smtpUser" value="contact@schoolconnect.gn">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Mot de passe SMTP</label>
+                                        <input type="password" class="form-control" id="smtpPassword" value="••••••••••">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="smtpTLS" checked>
+                                    <label class="form-check-label" for="smtpTLS">
+                                        Utiliser TLS/SSL
+                                    </label>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Enregistrer la Configuration Email
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="testEmail()">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Envoyer un Email de Test
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB 3: Paramètres Système -->
+                <div class="tab-pane fade" id="system" role="tabpanel">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-cog"></i>
+                                Paramètres Généraux du Système
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSystem">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nom de l'Application</label>
+                                        <input type="text" class="form-control" value="SchoolConnect Guinea" disabled>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Version</label>
+                                        <input type="text" class="form-control" value="1.0.0" disabled>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Langue par défaut</label>
+                                        <select class="form-select">
+                                            <option value="fr" selected>Français</option>
+                                            <option value="en">Anglais</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Fuseau horaire</label>
+                                        <select class="form-select">
+                                            <option value="Africa/Conakry" selected>GMT+0 (Conakry)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">Alertes Automatiques</h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="alertAbsences" checked>
+                                    <label class="form-check-label" for="alertAbsences">
+                                        Alerte : 5+ absences par semaine
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="alertClasse" checked>
+                                    <label class="form-check-label" for="alertClasse">
+                                        Alerte : 30%+ de la classe absente
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="alertScan" checked>
+                                    <label class="form-check-label" for="alertScan">
+                                        Alerte : Aucun scan pour un élève
+                                    </label>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Enregistrer les Paramètres
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Zone Dangereuse
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Action à utiliser avec prudence.</p>
+                            <button class="btn btn-outline-danger" onclick="clearCache()">
+                                <i class="fas fa-trash"></i>
+                                Vider le Cache Système
+                            </button>
+                            <p class="text-muted mt-3 small">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Note :</strong> Cette action déconnectera tous les utilisateurs actuellement connectés et peut ralentir temporairement le système.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB 4: Sécurité -->
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Paramètres de Sécurité
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSecurity">
+                                <h6 class="mb-3">Authentification</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Durée de session (minutes)</label>
+                                        <input type="number" class="form-control" value="60">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tentatives de connexion max</label>
+                                        <input type="number" class="form-control" value="5">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="enforce2FA">
+                                    <label class="form-check-label" for="enforce2FA">
+                                        Activer l'authentification à deux facteurs (2FA)
+                                    </label>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">Mot de Passe Super Admin</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nouveau Mot de Passe</label>
+                                        <input type="password" class="form-control" id="newPassword">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Confirmer Mot de Passe</label>
+                                        <input type="password" class="form-control" id="confirmPassword">
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Le mot de passe doit contenir au moins 8 caractères, dont des majuscules, minuscules et chiffres.
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Enregistrer les Paramètres de Sécurité
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'super_admin',
+            pageTitle: 'Paramètres Système'
+        });
+        
+        // ============ ACTIVER ONGLET SELON ANCRE URL ============
+        window.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash;
+            if (hash) {
+                const tabId = hash.replace('#', '');
+                const tabButton = document.querySelector(`#${tabId}-tab`);
+                if (tabButton) {
+                    const tab = new bootstrap.Tab(tabButton);
+                    tab.show();
+                }
+            }
+        });
+        
+        // ============ FORMS ============
+        document.getElementById('formSMS').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showToast('Configuration SMS enregistrée avec succès !', 'success');
+        });
+        
+        document.getElementById('formEmail').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showToast('Configuration Email enregistrée avec succès !', 'success');
+        });
+        
+        document.getElementById('formSystem').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showToast('Paramètres système enregistrés avec succès !', 'success');
+        });
+        
+        document.getElementById('formSecurity').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            
+            if (newPass && newPass !== confirmPass) {
+                showToast('Les mots de passe ne correspondent pas !', 'danger');
+                return;
+            }
+            
+            showToast('Paramètres de sécurité enregistrés avec succès !', 'success');
+        });
+        
+        // ============ ACTIONS ============
+        function testSMS() {
+            showToast('Envoi du SMS de test en cours...', 'info');
+            setTimeout(() => {
+                showToast('SMS de test envoyé avec succès au +224 622 00 00 00', 'success');
+            }, 2000);
+        }
+        
+        function testEmail() {
+            showToast('Envoi de l\'email de test en cours...', 'info');
+            setTimeout(() => {
+                showToast('Email de test envoyé avec succès à contact@schoolconnect.gn', 'success');
+            }, 2000);
+        }
+        
+        function clearCache() {
+            if (confirm('⚠️ ATTENTION !\n\nVider le cache va déconnecter tous les utilisateurs actuellement connectés.\n\nÊtes-vous sûr de vouloir continuer ?')) {
+                showToast('Cache système vidé avec succès !', 'success');
+            }
+        }
+    </script>
+</body>
+</html>

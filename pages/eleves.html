@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Élèves - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header avec filtres -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Rechercher un élève...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterClasse">
+                                <option value="">Toutes les classes</option>
+                                <option value="CP-A">CP-A</option>
+                                <option value="CE1-A">CE1-A</option>
+                                <option value="CE2-A">CE2-A</option>
+                                <option value="CM1-A">CM1-A</option>
+                                <option value="CM2-A">CM2-A</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterStatut">
+                                <option value="">Tous les statuts</option>
+                                <option value="actif">Actifs</option>
+                                <option value="inactif">Inactifs</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addEleveModal">
+                                <i class="fas fa-plus"></i>
+                                Ajouter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats rapides -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0" id="statTotal">450</h3>
+                            <small class="text-muted">Total Élèves</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0" id="statActifs">445</h3>
+                            <small class="text-muted">Actifs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-0" id="statInactifs">5</h3>
+                            <small class="text-muted">Inactifs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-orange mb-0" id="statClasses">12</h3>
+                            <small class="text-muted">Classes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table élèves -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-graduate"></i>
+                        Liste des Élèves
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Nom Complet</th>
+                                    <th>Classe</th>
+                                    <th>Parent</th>
+                                    <th>Date Naissance</th>
+                                    <th>QR Code</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="elevesTableBody">
+                                <!-- Sera rempli par JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Ajouter Élève -->
+    <div class="modal fade" id="addEleveModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus"></i>
+                        Ajouter un Élève
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEleveForm">
+                        <h6 class="mb-3 text-primary"><i class="fas fa-user"></i> Informations Élève</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Photo Élève</label>
+                                <input type="file" class="form-control" id="photoEleve" accept="image/*">
+                                <small class="text-muted">Format: JPG, PNG (max 2MB) - Optionnel</small>
+                                <div id="photoPreview" class="mt-3" style="display:none;">
+                                    <img id="previewImage" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" id="nomEleve" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Prénom *</label>
+                                <input type="text" class="form-control" id="prenomEleve" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Date de Naissance *</label>
+                                <input type="date" class="form-control" id="dateNaissanceEleve" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Classe *</label>
+                                <select class="form-select" id="classeEleve" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="CP-A">CP-A</option>
+                                    <option value="CE1-A">CE1-A</option>
+                                    <option value="CE2-A">CE2-A</option>
+                                    <option value="CM1-A">CM1-A</option>
+                                    <option value="CM2-A">CM2-A</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Sexe *</label>
+                                <select class="form-select" id="sexeEleve" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Adresse</label>
+                                <input type="text" class="form-control" id="adresseEleve">
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="mb-3 text-success"><i class="fas fa-users"></i> Informations Parent</h6>
+                        
+                        <!-- Choix parent existant ou nouveau -->
+                        <div class="mb-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="parentType" id="parentExistant" value="existant" checked>
+                                <label class="form-check-label" for="parentExistant">
+                                    Parent Existant
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="parentType" id="parentNouveau" value="nouveau">
+                                <label class="form-check-label" for="parentNouveau">
+                                    Nouveau Parent
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Parent existant -->
+                        <div id="parentExistantSection">
+                            <div class="mb-3">
+                                <label class="form-label">Rechercher un Parent par Téléphone *</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="searchParent" 
+                                       placeholder="Tapez le numéro de téléphone (ex: 622...)"
+                                       autocomplete="off">
+                                <input type="hidden" id="selectedParentId">
+                                <small class="text-muted">Tapez au moins 3 chiffres pour rechercher</small>
+                                
+                                <!-- Résultats de recherche -->
+                                <div id="parentSearchResults" class="list-group mt-2" style="display:none; max-height: 300px; overflow-y: auto; position: relative; z-index: 1000;">
+                                    <!-- Sera rempli dynamiquement -->
+                                </div>
+                                
+                                <!-- Parent sélectionné -->
+                                <div id="selectedParentDisplay" class="alert alert-success mt-2" style="display:none;">
+                                    <strong><i class="fas fa-check-circle"></i> Parent sélectionné :</strong>
+                                    <div id="selectedParentInfo" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nouveau parent -->
+                        <div id="parentNouveauSection" style="display:none;">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Nom Parent *</label>
+                                    <input type="text" class="form-control" id="nomParent">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Prénom Parent *</label>
+                                    <input type="text" class="form-control" id="prenomParent">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Téléphone Parent *</label>
+                                    <input type="tel" class="form-control" id="telephoneParent" placeholder="622 12 34 56">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>QR Code :</strong> Sera généré automatiquement lors de la création de l'élève.
+                        </div>
+                        
+                        <div class="alert alert-danger d-none" id="errorAlertEleve"></div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Créer l'Élève
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Carte Badge QR -->
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-id-card"></i>
+                        Carte Badge Élève
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Carte Badge -->
+                    <div id="badgeCard" style="width: 400px; margin: 0 auto; background: linear-gradient(135deg, #3b82f6, #1e40af); border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: white; font-family: Poppins, sans-serif;">
+                        
+                        <!-- Header avec logo -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f97316, #fb923c); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                                <i class="fas fa-graduation-cap" style="font-size: 40px; color: white;"></i>
+                            </div>
+                            <h5 style="margin: 10px 0 5px; font-weight: 700; font-size: 18px;">SCHOOLCONNECT</h5>
+                            <p style="margin: 0; font-size: 12px; opacity: 0.9;" id="badgeEcole">École Lavoisier</p>
+                        </div>
+                        
+                        <!-- Photo élève -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div id="badgePhotoContainer" style="width: 120px; height: 120px; background: white; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #f97316; overflow: hidden;">
+                                <img id="badgePhoto" src="" alt="Photo" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                <div id="badgeInitials" style="font-size: 48px; font-weight: 700; color: #3b82f6;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Infos élève -->
+                        <div style="text-align: center; margin-bottom: 20px; background: rgba(255,255,255,0.15); border-radius: 15px; padding: 15px;">
+                            <h4 id="badgeNom" style="margin: 0 0 5px; font-weight: 700; font-size: 22px;"></h4>
+                            <p id="badgeClasse" style="margin: 0; font-size: 16px; opacity: 0.95;"></p>
+                        </div>
+                        
+                        <!-- QR Code -->
+                        <div style="text-align: center; background: white; border-radius: 15px; padding: 20px;">
+                            <img id="badgeQR" src="" alt="QR Code" style="width: 180px; height: 180px; margin: 0 auto; display: block;">
+                            <p id="badgeCode" style="margin: 10px 0 0; font-size: 11px; color: #666; font-weight: 600;"></p>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div style="text-align: center; margin-top: 20px; font-size: 11px; opacity: 0.8;">
+                            <p style="margin: 5px 0;">📱 Scannez pour marquer la présence</p>
+                            <p style="margin: 5px 0;">🏫 Année Scolaire 2024-2025</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Boutons -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary" onclick="downloadBadge()">
+                            <i class="fas fa-download"></i>
+                            Télécharger la Carte Badge
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="printBadge()">
+                            <i class="fas fa-print"></i>
+                            Imprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Gestion des Élèves',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        const fakeParents = [
+            { id: 1, nom: 'Diallo', prenom: 'Amadou', telephone: '622 11 22 33', nb_enfants: 2, enfants: 'Aissatou (CM2), Ibrahim (CP)' },
+            { id: 2, nom: 'Camara', prenom: 'Fatoumata', telephone: '622 44 55 66', nb_enfants: 1, enfants: 'Mariama (CE2)' },
+            { id: 3, nom: 'Bah', prenom: 'Ibrahim', telephone: '622 77 88 99', nb_enfants: 3, enfants: 'Mamadou (CM1), Aissatou (CE1), Fatoumata (CP)' },
+            { id: 4, nom: 'Sy', prenom: 'Mamadou', telephone: '622 33 44 55', nb_enfants: 1, enfants: 'Ibrahima (CM2)' },
+            { id: 5, nom: 'Diallo', prenom: 'Mamadou', telephone: '622 99 88 77', nb_enfants: 2, enfants: 'Fatoumata (CE2), Amadou (CP)' },
+            { id: 6, nom: 'Keita', prenom: 'Aminata', telephone: '622 55 66 77', nb_enfants: 1, enfants: 'Saliou (CM1)' },
+            { id: 7, nom: 'Touré', prenom: 'Alpha', telephone: '622 88 99 00', nb_enfants: 2, enfants: 'Mohamed (CM2), Kadiatou (CE1)' },
+            { id: 8, nom: 'Condé', prenom: 'Mariama', telephone: '622 12 34 56', nb_enfants: 1, enfants: 'Oumar (CP)' },
+        ];
+        
+        const fakeEleves = [
+            {
+                id: 1,
+                nom: 'Diallo',
+                prenom: 'Mamadou',
+                classe: 'CM2-A',
+                date_naissance: '2012-05-15',
+                sexe: 'M',
+                parent: 'Diallo Amadou (622 11 22 33)',
+                qr_code: 'ELEVE-001-LAVO2025',
+                statut: 'actif'
+            },
+            {
+                id: 2,
+                nom: 'Camara',
+                prenom: 'Fatoumata',
+                classe: 'CE2-A',
+                date_naissance: '2014-08-22',
+                sexe: 'F',
+                parent: 'Camara Fatoumata (622 44 55 66)',
+                qr_code: 'ELEVE-002-LAVO2025',
+                statut: 'actif'
+            },
+            {
+                id: 3,
+                nom: 'Bah',
+                prenom: 'Ibrahima',
+                classe: 'CP-A',
+                date_naissance: '2017-03-10',
+                sexe: 'M',
+                parent: 'Bah Ibrahim (622 77 88 99)',
+                qr_code: 'ELEVE-003-LAVO2025',
+                statut: 'actif'
+            },
+            {
+                id: 4,
+                nom: 'Sy',
+                prenom: 'Aissatou',
+                classe: 'CM1-A',
+                date_naissance: '2013-11-05',
+                sexe: 'F',
+                parent: 'Sy Mamadou (622 33 44 55)',
+                qr_code: 'ELEVE-004-LAVO2025',
+                statut: 'inactif'
+            }
+        ];
+        
+        let filteredEleves = [...fakeEleves];
+        
+        // ============ TOGGLE PARENT TYPE ============
+        document.querySelectorAll('input[name="parentType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'existant') {
+                    document.getElementById('parentExistantSection').style.display = 'block';
+                    document.getElementById('parentNouveauSection').style.display = 'none';
+                } else {
+                    document.getElementById('parentExistantSection').style.display = 'none';
+                    document.getElementById('parentNouveauSection').style.display = 'block';
+                }
+            });
+        });
+        
+        // ============ PREVIEW PHOTO ============
+        document.getElementById('photoEleve').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('previewImage').src = event.target.result;
+                    document.getElementById('photoPreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // ============ RECHERCHE PARENT DYNAMIQUE ============
+        let selectedParent = null;
+        
+        document.getElementById('searchParent').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.trim();
+            const resultsContainer = document.getElementById('parentSearchResults');
+            
+            // Minimum 3 caractères pour rechercher
+            if (searchTerm.length < 3) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Filtrer parents par téléphone
+            const results = fakeParents.filter(parent => 
+                parent.telephone.replace(/\s/g, '').includes(searchTerm.replace(/\s/g, ''))
+            );
+            
+            // Afficher résultats
+            if (results.length > 0) {
+                resultsContainer.innerHTML = results.map(parent => `
+                    <button type="button" class="list-group-item list-group-item-action" onclick="selectParent(${parent.id})">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${parent.prenom} ${parent.nom}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-phone"></i> ${parent.telephone}
+                                </small>
+                                <br>
+                                <small class="text-primary">
+                                    <i class="fas fa-users"></i> ${parent.nb_enfants} enfant${parent.nb_enfants > 1 ? 's' : ''} : ${parent.enfants}
+                                </small>
+                            </div>
+                            <i class="fas fa-check-circle text-success" style="font-size: 20px;"></i>
+                        </div>
+                    </button>
+                `).join('');
+                resultsContainer.style.display = 'block';
+            } else {
+                resultsContainer.innerHTML = `
+                    <div class="list-group-item text-center text-muted">
+                        <i class="fas fa-search"></i>
+                        Aucun parent trouvé avec ce numéro
+                    </div>
+                `;
+                resultsContainer.style.display = 'block';
+            }
+        });
+        
+        function selectParent(parentId) {
+            selectedParent = fakeParents.find(p => p.id === parentId);
+            
+            // Masquer résultats
+            document.getElementById('parentSearchResults').style.display = 'none';
+            
+            // Afficher parent sélectionné
+            document.getElementById('selectedParentId').value = parentId;
+            document.getElementById('selectedParentInfo').innerHTML = `
+                <strong>${selectedParent.prenom} ${selectedParent.nom}</strong><br>
+                <small><i class="fas fa-phone"></i> ${selectedParent.telephone}</small><br>
+                <small><i class="fas fa-users"></i> ${selectedParent.nb_enfants} enfant${selectedParent.nb_enfants > 1 ? 's' : ''} : ${selectedParent.enfants}</small>
+            `;
+            document.getElementById('selectedParentDisplay').style.display = 'block';
+            
+            // Vider le champ de recherche
+            document.getElementById('searchParent').value = '';
+        }
+        
+        // Réinitialiser sélection parent quand on change de type
+        document.querySelectorAll('input[name="parentType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                selectedParent = null;
+                document.getElementById('selectedParentDisplay').style.display = 'none';
+                document.getElementById('searchParent').value = '';
+                document.getElementById('parentSearchResults').style.display = 'none';
+            });
+        });
+        
+        // ============ RENDER TABLE ============
+        function renderEleves() {
+            const tbody = document.getElementById('elevesTableBody');
+            
+            if (filteredEleves.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-user-graduate fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Aucun élève trouvé</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = filteredEleves.map(eleve => `
+                <tr>
+                    <td>
+                        <div class="user-avatar" style="width:40px; height:40px; font-size:14px;">
+                            ${eleve.prenom.charAt(0)}${eleve.nom.charAt(0)}
+                        </div>
+                    </td>
+                    <td><strong>${eleve.nom} ${eleve.prenom}</strong></td>
+                    <td><span class="badge bg-primary">${eleve.classe}</span></td>
+                    <td><small>${eleve.parent}</small></td>
+                    <td>${formatDate(eleve.date_naissance)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="viewQR(${eleve.id})">
+                            <i class="fas fa-qrcode"></i>
+                        </button>
+                    </td>
+                    <td>
+                        <span class="badge ${eleve.statut === 'actif' ? 'badge-success' : 'badge-warning'}">
+                            ${eleve.statut === 'actif' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewEleve(${eleve.id})" title="Voir détails">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editEleve(${eleve.id})" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEleve(${eleve.id})" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const classe = document.getElementById('filterClasse').value;
+            const statut = document.getElementById('filterStatut').value;
+            
+            filteredEleves = fakeEleves.filter(eleve => {
+                const matchSearch = eleve.nom.toLowerCase().includes(search) || 
+                                   eleve.prenom.toLowerCase().includes(search);
+                const matchClasse = !classe || eleve.classe === classe;
+                const matchStatut = !statut || eleve.statut === statut;
+                
+                return matchSearch && matchClasse && matchStatut;
+            });
+            
+            renderEleves();
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterClasse').addEventListener('change', applyFilters);
+        document.getElementById('filterStatut').addEventListener('change', applyFilters);
+        
+        // ============ ACTIONS ============
+        function viewQR(id) {
+            const eleve = fakeEleves.find(e => e.id === id);
+            
+            // Remplir la carte badge
+            document.getElementById('badgeEcole').textContent = 'École Lavoisier - Conakry';
+            document.getElementById('badgeNom').textContent = `${eleve.nom} ${eleve.prenom}`;
+            document.getElementById('badgeClasse').textContent = `Classe: ${eleve.classe}`;
+            document.getElementById('badgeCode').textContent = eleve.qr_code;
+            document.getElementById('badgeQR').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${eleve.qr_code}`;
+            
+            // Photo ou initiales
+            const initials = `${eleve.prenom.charAt(0)}${eleve.nom.charAt(0)}`;
+            document.getElementById('badgeInitials').textContent = initials;
+            document.getElementById('badgePhoto').style.display = 'none';
+            document.getElementById('badgeInitials').style.display = 'block';
+            
+            new bootstrap.Modal(document.getElementById('qrModal')).show();
+        }
+        
+        function downloadBadge() {
+            // Utiliser html2canvas pour capturer la carte
+            showToast('Fonctionnalité de téléchargement à venir (nécessite html2canvas)', 'info');
+        }
+        
+        function printBadge() {
+            window.print();
+        }
+        
+        function downloadQR() {
+            const qrImg = document.getElementById('badgeQR');
+            const link = document.createElement('a');
+            link.href = qrImg.src;
+            link.download = 'badge_qr.png';
+            link.click();
+        }
+        
+        function viewEleve(id) {
+            alert('Voir détails élève #' + id);
+        }
+        
+        function editEleve(id) {
+            alert('Modifier élève #' + id);
+        }
+        
+        function deleteEleve(id) {
+            if (confirm('Voulez-vous vraiment supprimer cet élève ?')) {
+                const index = fakeEleves.findIndex(e => e.id === id);
+                fakeEleves.splice(index, 1);
+                applyFilters();
+                showToast('Élève supprimé avec succès', 'success');
+            }
+        }
+        
+        // ============ FORMULAIRE AJOUT ============
+        document.getElementById('addEleveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newEleve = {
+                id: fakeEleves.length + 1,
+                nom: document.getElementById('nomEleve').value,
+                prenom: document.getElementById('prenomEleve').value,
+                classe: document.getElementById('classeEleve').value,
+                date_naissance: document.getElementById('dateNaissanceEleve').value,
+                sexe: document.getElementById('sexeEleve').value,
+                parent: 'Parent Test (622 00 00 00)',
+                qr_code: `ELEVE-${String(fakeEleves.length + 1).padStart(3, '0')}-LAVO2025`,
+                statut: 'actif'
+            };
+            
+            fakeEleves.push(newEleve);
+            
+            bootstrap.Modal.getInstance(document.getElementById('addEleveModal')).hide();
+            this.reset();
+            
+            applyFilters();
+            showToast('Élève créé avec succès ! QR Code généré.', 'success');
+        });
+        
+        // ============ INIT ============
+        renderEleves();
+    </script>
+</body>
+</html>

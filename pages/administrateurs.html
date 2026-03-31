@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Administrateurs - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Rechercher un administrateur...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterEcole">
+                                <option value="">Toutes les écoles</option>
+                                <option value="LAVO2025">École Lavoisier</option>
+                                <option value="VOLT2025">École Voltaire</option>
+                                <option value="HUGO2025">École Victor Hugo</option>
+                                <option value="PAST2025">École Pasteur</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+                                <i class="fas fa-plus"></i>
+                                Ajouter Admin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0">4</h3>
+                            <small class="text-muted">Total Administrateurs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0">4</h3>
+                            <small class="text-muted">Comptes Actifs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-0">0</h3>
+                            <small class="text-muted">Comptes Suspendus</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alert info -->
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle"></i>
+                <strong>Information :</strong> Les comptes administrateurs sont créés automatiquement lors de la création d'une école. Le username et le mot de passe initial sont identiques au code de l'école.
+            </div>
+            
+            <!-- Table administrateurs -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-users-cog"></i>
+                        Liste des Administrateurs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>École</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Dernière Connexion</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminsTableBody">
+                                <!-- Sera rempli par JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Ajouter Admin -->
+    <div class="modal fade" id="addAdminModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus"></i>
+                        Ajouter un Administrateur
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Les administrateurs sont créés automatiquement avec les écoles. Utilisez cette option seulement pour créer un admin supplémentaire.
+                    </div>
+                    
+                    <form id="addAdminForm">
+                        <div class="mb-3">
+                            <label class="form-label">École *</label>
+                            <select class="form-select" id="ecoleAdmin" required>
+                                <option value="">Sélectionner une école...</option>
+                                <option value="LAVO2025">École Lavoisier</option>
+                                <option value="VOLT2025">École Voltaire</option>
+                                <option value="HUGO2025">École Victor Hugo</option>
+                                <option value="PAST2025">École Pasteur</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="emailAdmin" placeholder="admin2@ecole.gn" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Username *</label>
+                            <input type="text" class="form-control" id="usernameAdmin" placeholder="LAVO2025-2" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mot de passe initial *</label>
+                            <input type="password" class="form-control" id="passwordAdmin" required>
+                            <small class="text-muted">L'admin devra le changer à sa première connexion</small>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Créer Admin
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Réinitialiser Mot de Passe -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key"></i>
+                        Réinitialiser Mot de Passe
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Voulez-vous réinitialiser le mot de passe de <strong id="resetAdminName"></strong> ?</p>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Un nouveau mot de passe sera généré et envoyé par email à l'administrateur.
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-warning" onclick="confirmResetPassword()">
+                            <i class="fas fa-key"></i>
+                            Réinitialiser
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'super_admin',
+            pageTitle: 'Gestion Administrateurs',
+            user: {
+                nom: 'Super',
+                prenom: 'Admin',
+                email: 'superadmin@schoolconnect.gn'
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        let fakeAdmins = [
+            {
+                id: 1,
+                ecole: 'École Lavoisier',
+                code_ecole: 'LAVO2025',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                username: 'LAVO2025',
+                derniere_connexion: '2025-03-15 14:30',
+                statut: 'actif'
+            },
+            {
+                id: 2,
+                ecole: 'École Voltaire',
+                code_ecole: 'VOLT2025',
+                email: 'admin@volt2025.schoolconnect.gn',
+                username: 'VOLT2025',
+                derniere_connexion: '2025-03-14 09:15',
+                statut: 'actif'
+            },
+            {
+                id: 3,
+                ecole: 'École Victor Hugo',
+                code_ecole: 'HUGO2025',
+                email: 'admin@hugo2025.schoolconnect.gn',
+                username: 'HUGO2025',
+                derniere_connexion: '2025-03-13 16:45',
+                statut: 'actif'
+            },
+            {
+                id: 4,
+                ecole: 'École Pasteur',
+                code_ecole: 'PAST2025',
+                email: 'admin@past2025.schoolconnect.gn',
+                username: 'PAST2025',
+                derniere_connexion: 'Jamais',
+                statut: 'actif'
+            }
+        ];
+        
+        let filteredAdmins = [...fakeAdmins];
+        let currentAdminId = null;
+        
+        // ============ RENDER TABLE ============
+        function renderAdmins() {
+            const tbody = document.getElementById('adminsTableBody');
+            
+            tbody.innerHTML = filteredAdmins.map(admin => `
+                <tr>
+                    <td><strong>${admin.ecole}</strong><br><small class="text-muted">${admin.code_ecole}</small></td>
+                    <td>${admin.email}</td>
+                    <td><span class="badge bg-secondary">${admin.username}</span></td>
+                    <td><small>${admin.derniere_connexion}</small></td>
+                    <td>
+                        <span class="badge ${admin.statut === 'actif' ? 'badge-success' : 'badge-danger'}">
+                            ${admin.statut === 'actif' ? 'Actif' : 'Suspendu'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-warning" onclick="resetPassword(${admin.id})" title="Réinitialiser mot de passe">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="suspendAdmin(${admin.id})" title="Suspendre">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const ecole = document.getElementById('filterEcole').value;
+            
+            filteredAdmins = fakeAdmins.filter(admin => {
+                const matchSearch = admin.ecole.toLowerCase().includes(search) || 
+                                   admin.email.toLowerCase().includes(search) ||
+                                   admin.username.toLowerCase().includes(search);
+                const matchEcole = !ecole || admin.code_ecole === ecole;
+                return matchSearch && matchEcole;
+            });
+            
+            renderAdmins();
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterEcole').addEventListener('change', applyFilters);
+        
+        // ============ ACTIONS ============
+        function resetPassword(id) {
+            const admin = fakeAdmins.find(a => a.id === id);
+            currentAdminId = id;
+            
+            document.getElementById('resetAdminName').textContent = admin.email;
+            new bootstrap.Modal(document.getElementById('resetPasswordModal')).show();
+        }
+        
+        function confirmResetPassword() {
+            bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide();
+            showToast('Mot de passe réinitialisé et envoyé par email !', 'success');
+        }
+        
+        function suspendAdmin(id) {
+            const admin = fakeAdmins.find(a => a.id === id);
+            
+            if (confirm(`Voulez-vous vraiment suspendre le compte de ${admin.email} ?`)) {
+                admin.statut = admin.statut === 'actif' ? 'suspendu' : 'actif';
+                renderAdmins();
+                showToast(`Compte ${admin.statut === 'actif' ? 'activé' : 'suspendu'} avec succès !`, 'success');
+            }
+        }
+        
+        // ============ FORMULAIRE AJOUT ============
+        document.getElementById('addAdminForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newAdmin = {
+                id: fakeAdmins.length + 1,
+                ecole: document.getElementById('ecoleAdmin').selectedOptions[0].text,
+                code_ecole: document.getElementById('ecoleAdmin').value,
+                email: document.getElementById('emailAdmin').value,
+                username: document.getElementById('usernameAdmin').value,
+                derniere_connexion: 'Jamais',
+                statut: 'actif'
+            };
+            
+            fakeAdmins.push(newAdmin);
+            
+            bootstrap.Modal.getInstance(document.getElementById('addAdminModal')).hide();
+            this.reset();
+            
+            applyFilters();
+            showToast('Administrateur créé avec succès !', 'success');
+        });
+        
+        // ============ INIT ============
+        renderAdmins();
+    </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Écoles - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header avec filtres -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Rechercher une école...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterStatut">
+                                <option value="">Tous les statuts</option>
+                                <option value="active">Actives</option>
+                                <option value="suspendue">Suspendues</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterVille">
+                                <option value="">Toutes les villes</option>
+                                <option value="Conakry">Conakry</option>
+                                <option value="Kankan">Kankan</option>
+                                <option value="Labé">Labé</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addEcoleModal">
+                                <i class="fas fa-plus"></i>
+                                Nouvelle École
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats rapides -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0" id="statTotal">0</h3>
+                            <small class="text-muted">Total Écoles</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0" id="statActives">0</h3>
+                            <small class="text-muted">Actives</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-danger mb-0" id="statSuspendues">0</h3>
+                            <small class="text-muted">Suspendues</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-orange mb-0" id="statEleves">0</h3>
+                            <small class="text-muted">Total Élèves</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Grille des écoles -->
+            <div class="row" id="ecolesGrid">
+                <!-- Sera rempli par JavaScript -->
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Ajout École -->
+    <div class="modal fade" id="addEcoleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-school"></i>
+                        Ajouter une École
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEcoleForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Code École *</label>
+                                <input type="text" class="form-control" id="codeEcole" placeholder="Ex: LAVO2025" required>
+                                <small class="text-muted">Ce code servira de login pour l'admin</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom de l'École *</label>
+                                <input type="text" class="form-control" id="nomEcole" placeholder="Ex: École Lavoisier" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" id="adresseEcole" placeholder="Adresse complète">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Ville</label>
+                                <select class="form-select" id="villeEcole">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="Conakry">Conakry</option>
+                                    <option value="Kankan">Kankan</option>
+                                    <option value="Labé">Labé</option>
+                                    <option value="Kindia">Kindia</option>
+                                    <option value="N'Zérékoré">N'Zérékoré</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="telephoneEcole" placeholder="622 12 34 56">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="emailEcole" placeholder="contact@ecole.gn">
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong><i class="fas fa-info-circle"></i> Information :</strong>
+                            <p class="mb-0 mt-2">Un compte administrateur sera créé automatiquement avec :</p>
+                            <ul class="mb-0 mt-2">
+                                <li><strong>Email :</strong> admin@[code-ecole].schoolconnect.gn</li>
+                                <li><strong>Mot de passe :</strong> Le code de l'école</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="alert alert-danger d-none" id="errorAlert"></div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Créer l'École
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Modifier École -->
+    <div class="modal fade" id="editEcoleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit"></i>
+                        Modifier l'École
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editEcoleForm">
+                        <input type="hidden" id="editEcoleId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Code École</label>
+                                <input type="text" class="form-control" id="editCodeEcole" disabled>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nom de l'École *</label>
+                                <input type="text" class="form-control" id="editNomEcole" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" id="editAdresseEcole">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Ville</label>
+                                <select class="form-select" id="editVilleEcole">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="Conakry">Conakry</option>
+                                    <option value="Kankan">Kankan</option>
+                                    <option value="Labé">Labé</option>
+                                    <option value="Kindia">Kindia</option>
+                                    <option value="N'Zérékoré">N'Zérékoré</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="editTelephoneEcole">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmailEcole">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Enregistrer
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'super_admin',
+            pageTitle: 'Liste des Écoles'
+        });
+        
+        // ============ DONNÉES FAKE ============
+        let fakeEcoles = [
+            {
+                id: 1,
+                code: 'LAVO2025',
+                nom: 'École Lavoisier',
+                ville: 'Conakry',
+                adresse: 'Quartier Kaloum',
+                telephone: '622 12 34 56',
+                email: 'contact@lavoisier.gn',
+                nb_eleves: 450,
+                nb_classes: 12,
+                statut: 'active',
+                date_creation: '2024-09-01'
+            },
+            {
+                id: 2,
+                code: 'VOLT2025',
+                nom: 'École Voltaire',
+                ville: 'Conakry',
+                adresse: 'Quartier Matam',
+                telephone: '622 98 76 54',
+                email: 'contact@voltaire.gn',
+                nb_eleves: 320,
+                nb_classes: 10,
+                statut: 'active',
+                date_creation: '2024-10-15'
+            },
+            {
+                id: 3,
+                code: 'HUGO2025',
+                nom: 'École Victor Hugo',
+                ville: 'Kankan',
+                adresse: 'Centre-ville',
+                telephone: '622 11 22 33',
+                email: 'contact@hugo.gn',
+                nb_eleves: 280,
+                nb_classes: 8,
+                statut: 'active',
+                date_creation: '2024-11-20'
+            },
+            {
+                id: 4,
+                code: 'PAST2025',
+                nom: 'École Pasteur',
+                ville: 'Labé',
+                adresse: 'Quartier Tata',
+                telephone: '622 44 55 66',
+                email: 'contact@pasteur.gn',
+                nb_eleves: 190,
+                nb_classes: 6,
+                statut: 'suspendue',
+                date_creation: '2024-08-10'
+            }
+        ];
+        
+        let filteredEcoles = [...fakeEcoles];
+        
+        // ============ FONCTIONS ============
+        function updateStats() {
+            const total = fakeEcoles.length;
+            const actives = fakeEcoles.filter(e => e.statut === 'active').length;
+            const suspendues = fakeEcoles.filter(e => e.statut === 'suspendue').length;
+            const totalEleves = fakeEcoles.reduce((sum, e) => sum + e.nb_eleves, 0);
+            
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statActives').textContent = actives;
+            document.getElementById('statSuspendues').textContent = suspendues;
+            document.getElementById('statEleves').textContent = formatNumber(totalEleves);
+        }
+        
+        function renderEcoles() {
+            const grid = document.getElementById('ecolesGrid');
+            
+            if (filteredEcoles.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-school fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Aucune école trouvée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredEcoles.map(ecole => `
+                <div class="col-md-6 col-lg-4 mb-4 fade-in">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1">${ecole.nom}</h5>
+                                    <span class="badge ${ecole.statut === 'active' ? 'badge-success' : 'badge-danger'}">
+                                        ${ecole.statut === 'active' ? 'Active' : 'Suspendue'}
+                                    </span>
+                                </div>
+                                <span class="badge bg-primary">${ecole.code}</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted d-block"><i class="fas fa-map-marker-alt"></i> ${ecole.ville}</small>
+                                <small class="text-muted d-block"><i class="fas fa-phone"></i> ${ecole.telephone}</small>
+                                <small class="text-muted d-block"><i class="fas fa-envelope"></i> ${ecole.email}</small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary mb-0">${ecole.nb_eleves}</h4>
+                                    <small class="text-muted">Élèves</small>
+                                </div>
+                                <div class="text-center">
+                                    <h4 class="text-orange mb-0">${ecole.nb_classes}</h4>
+                                    <small class="text-muted">Classes</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-primary flex-fill" onclick="viewEcole(${ecole.id})">
+                                    <i class="fas fa-eye"></i> Voir
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning" onclick="openEditModal(${ecole.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                ${ecole.statut === 'active' 
+                                    ? `<button class="btn btn-sm btn-outline-danger" onclick="toggleStatut(${ecole.id})">
+                                        <i class="fas fa-ban"></i>
+                                       </button>`
+                                    : `<button class="btn btn-sm btn-outline-success" onclick="toggleStatut(${ecole.id})">
+                                        <i class="fas fa-check"></i>
+                                       </button>`}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const statut = document.getElementById('filterStatut').value;
+            const ville = document.getElementById('filterVille').value;
+            
+            filteredEcoles = fakeEcoles.filter(ecole => {
+                const matchSearch = ecole.nom.toLowerCase().includes(search) || 
+                                   ecole.code.toLowerCase().includes(search);
+                const matchStatut = !statut || ecole.statut === statut;
+                const matchVille = !ville || ecole.ville === ville;
+                
+                return matchSearch && matchStatut && matchVille;
+            });
+            
+            renderEcoles();
+        }
+        
+        function viewEcole(id) {
+            window.location.href = `ecole-details.html?id=${id}`;
+        }
+        
+        function openEditModal(id) {
+            const ecole = fakeEcoles.find(e => e.id === id);
+            
+            document.getElementById('editEcoleId').value = ecole.id;
+            document.getElementById('editCodeEcole').value = ecole.code;
+            document.getElementById('editNomEcole').value = ecole.nom;
+            document.getElementById('editAdresseEcole').value = ecole.adresse;
+            document.getElementById('editVilleEcole').value = ecole.ville;
+            document.getElementById('editTelephoneEcole').value = ecole.telephone;
+            document.getElementById('editEmailEcole').value = ecole.email;
+            
+            new bootstrap.Modal(document.getElementById('editEcoleModal')).show();
+        }
+        
+        function toggleStatut(id) {
+            const ecole = fakeEcoles.find(e => e.id === id);
+            const action = ecole.statut === 'active' ? 'suspendre' : 'réactiver';
+            
+            if (confirm(`Voulez-vous ${action} cette école ?`)) {
+                ecole.statut = ecole.statut === 'active' ? 'suspendue' : 'active';
+                updateStats();
+                applyFilters();
+                showToast(`École ${action === 'suspendre' ? 'suspendue' : 'réactivée'} avec succès`, 'success');
+            }
+        }
+        
+        // ============ EVENTS ============
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterStatut').addEventListener('change', applyFilters);
+        document.getElementById('filterVille').addEventListener('change', applyFilters);
+        
+        document.getElementById('addEcoleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('codeEcole').value;
+            
+            if (fakeEcoles.some(e => e.code === code)) {
+                document.getElementById('errorAlert').textContent = 'Ce code école existe déjà !';
+                document.getElementById('errorAlert').classList.remove('d-none');
+                return;
+            }
+            
+            const newEcole = {
+                id: fakeEcoles.length + 1,
+                code: code,
+                nom: document.getElementById('nomEcole').value,
+                ville: document.getElementById('villeEcole').value,
+                adresse: document.getElementById('adresseEcole').value,
+                telephone: document.getElementById('telephoneEcole').value,
+                email: document.getElementById('emailEcole').value,
+                nb_eleves: 0,
+                nb_classes: 0,
+                statut: 'active',
+                date_creation: new Date().toISOString().split('T')[0]
+            };
+            
+            fakeEcoles.push(newEcole);
+            bootstrap.Modal.getInstance(document.getElementById('addEcoleModal')).hide();
+            this.reset();
+            
+            updateStats();
+            applyFilters();
+            showToast('École créée avec succès !', 'success');
+        });
+        
+        document.getElementById('editEcoleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = parseInt(document.getElementById('editEcoleId').value);
+            const ecole = fakeEcoles.find(e => e.id === id);
+            
+            ecole.nom = document.getElementById('editNomEcole').value;
+            ecole.adresse = document.getElementById('editAdresseEcole').value;
+            ecole.ville = document.getElementById('editVilleEcole').value;
+            ecole.telephone = document.getElementById('editTelephoneEcole').value;
+            ecole.email = document.getElementById('editEmailEcole').value;
+            
+            bootstrap.Modal.getInstance(document.getElementById('editEcoleModal')).hide();
+            applyFilters();
+            showToast('École modifiée avec succès !', 'success');
+        });
+        
+        // ============ INIT ============
+        updateStats();
+        renderEcoles();
+    </script>
+</body>
+</html>

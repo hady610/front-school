@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertes - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterType">
+                                <option value="">Tous les types</option>
+                                <option value="absences_repetees">Absences répétées</option>
+                                <option value="classe_absente">Classe très absente</option>
+                                <option value="aucun_scan">Aucun scan</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterPriorite">
+                                <option value="">Toutes les priorités</option>
+                                <option value="haute">Haute</option>
+                                <option value="moyenne">Moyenne</option>
+                                <option value="basse">Basse</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterStatut">
+                                <option value="non_traitee" selected>Non traitées</option>
+                                <option value="traitee">Traitées</option>
+                                <option value="">Toutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-danger mb-0">12</h3>
+                            <small class="text-muted">Alertes Actives</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning mb-0">5</h3>
+                            <small class="text-muted">Priorité Haute</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success mb-0">45</h3>
+                            <small class="text-muted">Traitées ce mois</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary mb-0">78%</h3>
+                            <small class="text-muted">Taux de traitement</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Alert info -->
+            <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle"></i>
+                <strong>Alertes automatiques :</strong> Le système génère automatiquement des alertes selon les critères définis (5+ absences/semaine, 30%+ classe absente, aucun scan).
+            </div>
+            
+            <!-- Liste alertes -->
+            <div class="row" id="alertesGrid">
+                <!-- Sera rempli par JS -->
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Modal Détails Alerte -->
+    <div class="modal fade" id="alerteDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-bell"></i>
+                        Détails de l'Alerte
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="alerteDetails">
+                        <!-- Sera rempli par JS -->
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-label">Action prise / Notes</label>
+                        <textarea class="form-control" id="alerteNotes" rows="3" placeholder="Indiquez l'action prise..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="marquerTraitee()">
+                        <i class="fas fa-check"></i>
+                        Marquer comme Traitée
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Alertes',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ DONNÉES FAKE ============
+        let fakeAlertes = [
+            {
+                id: 1,
+                type: 'absences_repetees',
+                titre: 'Absences répétées',
+                description: 'Diallo Mamadou (CM2-A) : 6 absences cette semaine',
+                priorite: 'haute',
+                date: '2025-03-15 09:00',
+                statut: 'non_traitee',
+                details: {
+                    eleve: 'Diallo Mamadou',
+                    classe: 'CM2-A',
+                    nb_absences: 6,
+                    periode: 'Cette semaine'
+                }
+            },
+            {
+                id: 2,
+                type: 'classe_absente',
+                titre: 'Classe très absente',
+                description: 'CM2-A : 35% d\'absents aujourd\'hui (12/35 élèves)',
+                priorite: 'haute',
+                date: '2025-03-15 10:30',
+                statut: 'non_traitee',
+                details: {
+                    classe: 'CM2-A',
+                    nb_absents: 12,
+                    total_eleves: 35,
+                    pourcentage: 35
+                }
+            },
+            {
+                id: 3,
+                type: 'aucun_scan',
+                titre: 'Aucun scan détecté',
+                description: 'Bah Ibrahima (CP-A) : Aucun scan aujourd\'hui',
+                priorite: 'moyenne',
+                date: '2025-03-15 11:00',
+                statut: 'non_traitee',
+                details: {
+                    eleve: 'Bah Ibrahima',
+                    classe: 'CP-A',
+                    dernier_scan: '2025-03-14 12:30'
+                }
+            },
+            {
+                id: 4,
+                type: 'absences_repetees',
+                titre: 'Absences répétées',
+                description: 'Camara Fatoumata (CE2-A) : 5 absences cette semaine',
+                priorite: 'moyenne',
+                date: '2025-03-14 14:00',
+                statut: 'traitee',
+                notes: 'Parent contacté. Enfant malade.',
+                details: {
+                    eleve: 'Camara Fatoumata',
+                    classe: 'CE2-A',
+                    nb_absences: 5,
+                    periode: 'Cette semaine'
+                }
+            }
+        ];
+        
+        let filteredAlertes = [...fakeAlertes];
+        let currentAlerteId = null;
+        
+        // ============ RENDER GRID ============
+        function renderAlertes() {
+            const grid = document.getElementById('alertesGrid');
+            
+            if (filteredAlertes.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Aucune alerte trouvée</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = filteredAlertes.map(alerte => {
+                let iconColor = '';
+                let badgePriorite = '';
+                let cardBorder = '';
+                
+                if (alerte.priorite === 'haute') {
+                    iconColor = 'text-danger';
+                    badgePriorite = 'badge-danger';
+                    cardBorder = 'border-danger';
+                } else if (alerte.priorite === 'moyenne') {
+                    iconColor = 'text-warning';
+                    badgePriorite = 'badge-warning';
+                    cardBorder = 'border-warning';
+                } else {
+                    iconColor = 'text-info';
+                    badgePriorite = 'badge-info';
+                    cardBorder = 'border-info';
+                }
+                
+                return `
+                <div class="col-md-6 mb-4 fade-in">
+                    <div class="card h-100 ${alerte.statut === 'traitee' ? 'opacity-75' : cardBorder}" style="border-left: 4px solid;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-exclamation-triangle ${iconColor}"></i>
+                                    ${alerte.titre}
+                                </h6>
+                                <span class="badge ${badgePriorite}">${alerte.priorite}</span>
+                            </div>
+                            
+                            <p class="mb-2">${alerte.description}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <small class="text-muted">
+                                    <i class="far fa-clock"></i>
+                                    ${formatDate(alerte.date)}
+                                </small>
+                                <div>
+                                    ${alerte.statut === 'traitee' 
+                                        ? '<span class="badge badge-success">Traitée</span>'
+                                        : `<button class="btn btn-sm btn-primary" onclick="viewAlerte(${alerte.id})">
+                                            <i class="fas fa-eye"></i> Voir
+                                           </button>`}
+                                </div>
+                            </div>
+                            
+                            ${alerte.notes ? `
+                                <div class="mt-2 p-2 bg-light rounded">
+                                    <small><strong>Note :</strong> ${alerte.notes}</small>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+        
+        // ============ FILTRES ============
+        function applyFilters() {
+            const type = document.getElementById('filterType').value;
+            const priorite = document.getElementById('filterPriorite').value;
+            const statut = document.getElementById('filterStatut').value;
+            
+            filteredAlertes = fakeAlertes.filter(alerte => {
+                const matchType = !type || alerte.type === type;
+                const matchPriorite = !priorite || alerte.priorite === priorite;
+                const matchStatut = !statut || alerte.statut === statut;
+                return matchType && matchPriorite && matchStatut;
+            });
+            
+            renderAlertes();
+        }
+        
+        document.getElementById('filterType').addEventListener('change', applyFilters);
+        document.getElementById('filterPriorite').addEventListener('change', applyFilters);
+        document.getElementById('filterStatut').addEventListener('change', applyFilters);
+        
+        // ============ ACTIONS ============
+        function viewAlerte(id) {
+            const alerte = fakeAlertes.find(a => a.id === id);
+            currentAlerteId = id;
+            
+            let detailsHTML = `
+                <div class="alert alert-${alerte.priorite === 'haute' ? 'danger' : 'warning'}">
+                    <h6><i class="fas fa-exclamation-triangle"></i> ${alerte.titre}</h6>
+                    <p class="mb-0">${alerte.description}</p>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Type :</strong> ${alerte.type}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Priorité :</strong> 
+                        <span class="badge badge-${alerte.priorite === 'haute' ? 'danger' : 'warning'}">${alerte.priorite}</span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Date :</strong> ${formatDate(alerte.date)}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Statut :</strong> 
+                        <span class="badge badge-warning">Non traitée</span>
+                    </div>
+                </div>
+                
+                <hr>
+                <h6>Détails :</h6>
+            `;
+            
+            if (alerte.type === 'absences_repetees') {
+                detailsHTML += `
+                    <ul>
+                        <li>Élève : <strong>${alerte.details.eleve}</strong></li>
+                        <li>Classe : <strong>${alerte.details.classe}</strong></li>
+                        <li>Nombre d'absences : <strong class="text-danger">${alerte.details.nb_absences}</strong></li>
+                        <li>Période : ${alerte.details.periode}</li>
+                    </ul>
+                `;
+            } else if (alerte.type === 'classe_absente') {
+                detailsHTML += `
+                    <ul>
+                        <li>Classe : <strong>${alerte.details.classe}</strong></li>
+                        <li>Élèves absents : <strong class="text-danger">${alerte.details.nb_absents} / ${alerte.details.total_eleves}</strong></li>
+                        <li>Pourcentage : <strong class="text-danger">${alerte.details.pourcentage}%</strong></li>
+                    </ul>
+                `;
+            } else if (alerte.type === 'aucun_scan') {
+                detailsHTML += `
+                    <ul>
+                        <li>Élève : <strong>${alerte.details.eleve}</strong></li>
+                        <li>Classe : <strong>${alerte.details.classe}</strong></li>
+                        <li>Dernier scan : ${alerte.details.dernier_scan}</li>
+                    </ul>
+                `;
+            }
+            
+            document.getElementById('alerteDetails').innerHTML = detailsHTML;
+            document.getElementById('alerteNotes').value = '';
+            
+            new bootstrap.Modal(document.getElementById('alerteDetailsModal')).show();
+        }
+        
+        function marquerTraitee() {
+            const notes = document.getElementById('alerteNotes').value;
+            const alerte = fakeAlertes.find(a => a.id === currentAlerteId);
+            
+            if (!notes) {
+                alert('Veuillez indiquer l\'action prise avant de marquer comme traitée.');
+                return;
+            }
+            
+            alerte.statut = 'traitee';
+            alerte.notes = notes;
+            
+            bootstrap.Modal.getInstance(document.getElementById('alerteDetailsModal')).hide();
+            
+            applyFilters();
+            showToast('Alerte marquée comme traitée avec succès !', 'success');
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const today = new Date();
+            const diffTime = Math.abs(today - date);
+            const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+            
+            if (diffHours < 1) return 'Il y a moins d\'1h';
+            if (diffHours < 24) return `Il y a ${diffHours}h`;
+            if (diffHours < 48) return 'Hier';
+            return date.toLocaleDateString('fr-FR');
+        }
+        
+        // ============ INIT ============
+        renderAlertes();
+    </script>
+</body>
+</html>

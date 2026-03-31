@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Onglets -->
+            <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="ecole-tab" data-bs-toggle="tab" data-bs-target="#ecole" type="button">
+                        <i class="fas fa-school"></i> Informations École
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="horaires-tab" data-bs-toggle="tab" data-bs-target="#horaires" type="button">
+                        <i class="fas fa-clock"></i> Horaires
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profil-tab" data-bs-toggle="tab" data-bs-target="#profil" type="button">
+                        <i class="fas fa-user"></i> Mon Profil
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="settingsTabContent">
+                
+                <!-- TAB 1: Informations École -->
+                <div class="tab-pane fade show active" id="ecole" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-school"></i>
+                                Informations de l'École
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Note :</strong> Le code école ne peut pas être modifié. Pour les autres informations, contactez le super administrateur.
+                            </div>
+                            
+                            <form id="ecoleForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Code École</label>
+                                        <input type="text" class="form-control" value="LAVO2025" disabled>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nom de l'École</label>
+                                        <input type="text" class="form-control" value="École Lavoisier" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Adresse</label>
+                                    <input type="text" class="form-control" value="Quartier Kaloum, Conakry" disabled>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Ville</label>
+                                        <input type="text" class="form-control" value="Conakry" disabled>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Téléphone</label>
+                                        <input type="tel" class="form-control" value="622 12 34 56" disabled>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="contact@lavoisier.gn" disabled>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB 2: Horaires -->
+                <div class="tab-pane fade" id="horaires" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-clock"></i>
+                                Configuration des Horaires
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="horairesForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Heure d'Ouverture *</label>
+                                        <input type="time" class="form-control" id="heureOuverture" value="08:00" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Heure de Fermeture *</label>
+                                        <input type="time" class="form-control" id="heureFermeture" value="17:00" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Limite Retard (Heure) *</label>
+                                        <input type="time" class="form-control" id="heureLimiteRetard" value="08:30" required>
+                                        <small class="text-muted">Après cette heure, l'élève est marqué en retard</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Détection Absence (Heure) *</label>
+                                        <input type="time" class="form-control" id="heureDetectionAbsence" value="08:45" required>
+                                        <small class="text-muted">Heure où le système détecte les absents</small>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">Horaires Révision (Optionnel)</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Début Pause Révision</label>
+                                        <input type="time" class="form-control" id="debutPauseRevision" value="12:30">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Fin Pause Révision</label>
+                                        <input type="time" class="form-control" id="finPauseRevision" value="14:00">
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    Les horaires de révision sont utilisés uniquement pour les classes ayant activé la révision (4 scans par jour).
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Enregistrer les Horaires
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB 3: Mon Profil -->
+                <div class="tab-pane fade" id="profil" role="tabpanel">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-user"></i>
+                                Informations du Compte
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="profilForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Email de Connexion</label>
+                                        <input type="email" class="form-control" value="admin@lavo2025.schoolconnect.gn" disabled>
+                                        <small class="text-muted">Généré automatiquement</small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Rôle</label>
+                                        <input type="text" class="form-control" value="Administrateur École" disabled>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-warning">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-key"></i>
+                                Changer le Mot de Passe
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="passwordForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Mot de Passe Actuel *</label>
+                                    <input type="password" class="form-control" id="oldPassword" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Nouveau Mot de Passe *</label>
+                                    <input type="password" class="form-control" id="newPassword" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Confirmer Nouveau Mot de Passe *</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Le mot de passe doit contenir au moins 8 caractères, dont des majuscules, minuscules et chiffres.
+                                </div>
+                                
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-key"></i>
+                                    Changer le Mot de Passe
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'admin_ecole',
+            pageTitle: 'Paramètres',
+            user: {
+                nom: 'Admin',
+                prenom: 'Lavoisier',
+                email: 'admin@lavo2025.schoolconnect.gn',
+                ecole: { nom: 'École Lavoisier' }
+            }
+        });
+        
+        // ============ ACTIVER ONGLET SELON ANCRE URL ============
+        window.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash;
+            if (hash) {
+                const tabId = hash.replace('#', '');
+                const tabButton = document.querySelector(`#${tabId}-tab`);
+                if (tabButton) {
+                    const tab = new bootstrap.Tab(tabButton);
+                    tab.show();
+                }
+            }
+        });
+        
+        // ============ FORM HORAIRES ============
+        document.getElementById('horairesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showToast('Horaires enregistrés avec succès !', 'success');
+        });
+        
+        // ============ FORM MOT DE PASSE ============
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showToast('Les mots de passe ne correspondent pas !', 'danger');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showToast('Le mot de passe doit contenir au moins 8 caractères !', 'danger');
+                return;
+            }
+            
+            // Simulation
+            showToast('Mot de passe modifié avec succès !', 'success');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

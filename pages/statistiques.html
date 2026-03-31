@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques Globales - SchoolConnect</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Notre CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="page-content">
+            
+            <!-- Filtres période -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <label class="form-label">Période</label>
+                            <select class="form-select" id="filterPeriode">
+                                <option value="7j">7 derniers jours</option>
+                                <option value="30j" selected>30 derniers jours</option>
+                                <option value="3m">3 derniers mois</option>
+                                <option value="annee">Cette année</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">École</label>
+                            <select class="form-select" id="filterEcole">
+                                <option value="">Toutes les écoles</option>
+                                <option value="1">École Lavoisier</option>
+                                <option value="2">École Voltaire</option>
+                                <option value="3">École Victor Hugo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <label class="form-label d-block">&nbsp;</label>
+                            <button class="btn btn-primary" onclick="exportPDF()">
+                                <i class="fas fa-file-pdf"></i>
+                                Exporter PDF
+                            </button>
+                            <button class="btn btn-success" onclick="exportExcel()">
+                                <i class="fas fa-file-excel"></i>
+                                Exporter Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- KPIs Principaux -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card fade-in">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>Total Écoles</h6>
+                                <div class="stat-value">4</div>
+                                <p class="stat-label text-success">+1 ce mois</p>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="fas fa-school"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card fade-in" style="animation-delay: 0.1s">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>Total Élèves</h6>
+                                <div class="stat-value">1,240</div>
+                                <p class="stat-label text-success">+85 ce mois</p>
+                            </div>
+                            <div class="stat-icon blue">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card fade-in" style="animation-delay: 0.2s">
+                        <div class="stat-card-content">
+                            <div class="stat-info">
+                                <h6>SMS Envoyés</h6>
+                                <div class="stat-value">3,250</div>
+                                <p class="stat-label">Ce mois-ci</p>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fas fa-sms"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Graphique Évolution -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-area"></i>
+                                Évolution des Indicateurs (30 derniers jours)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartEvolution" height="80"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 2 colonnes graphiques -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                Répartition par École
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartRepartition" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Top 5 Écoles par Effectif
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="chartTopEcoles" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tableau comparatif -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <i class="fas fa-table"></i>
+                        Tableau Comparatif des Écoles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>École</th>
+                                    <th>Ville</th>
+                                    <th class="text-center">Élèves</th>
+                                    <th class="text-center">SMS ce mois</th>
+                                    <th class="text-center">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableComparatif">
+                                <!-- Sera rempli par JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Notre JS -->
+    <script src="../assets/js/components.js"></script>
+    
+    <script>
+        // Initialiser la page
+        initPage({
+            userType: 'super_admin',
+            pageTitle: 'Statistiques Globales'
+        });
+        
+        // ============ DONNÉES FAKE ============
+        const statsEcoles = [
+            {
+                nom: 'École Lavoisier',
+                ville: 'Conakry',
+                eleves: 450,
+                classes: 12,
+                sms_mois: 1250,
+                taux_presence: 94,
+                statut: 'active'
+            },
+            {
+                nom: 'École Voltaire',
+                ville: 'Conakry',
+                eleves: 320,
+                classes: 10,
+                sms_mois: 890,
+                taux_presence: 91,
+                statut: 'active'
+            },
+            {
+                nom: 'École Victor Hugo',
+                ville: 'Kankan',
+                eleves: 280,
+                classes: 8,
+                sms_mois: 750,
+                taux_presence: 89,
+                statut: 'active'
+            },
+            {
+                nom: 'École Pasteur',
+                ville: 'Labé',
+                eleves: 190,
+                classes: 6,
+                sms_mois: 360,
+                taux_presence: 95,
+                statut: 'suspendue'
+            }
+        ];
+        
+        // ============ TABLEAU COMPARATIF ============
+        function loadTableComparatif() {
+            const tbody = document.getElementById('tableComparatif');
+            tbody.innerHTML = statsEcoles.map(ecole => `
+                <tr>
+                    <td><strong>${ecole.nom}</strong></td>
+                    <td>${ecole.ville}</td>
+                    <td class="text-center">${ecole.eleves}</td>
+                    <td class="text-center">${formatNumber(ecole.sms_mois)}</td>
+                    <td class="text-center">
+                        <span class="badge ${ecole.statut === 'active' ? 'badge-success' : 'badge-danger'}">
+                            ${ecole.statut === 'active' ? 'Active' : 'Suspendue'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // ============ GRAPHIQUES ============
+        function loadCharts() {
+            // Graphique Évolution
+            const ctx1 = document.getElementById('chartEvolution').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['J-30', 'J-25', 'J-20', 'J-15', 'J-10', 'J-5', 'Aujourd\'hui'],
+                    datasets: [
+                        {
+                            label: 'Élèves',
+                            data: [1150, 1170, 1190, 1200, 1215, 1230, 1240],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'SMS',
+                            data: [2800, 2850, 2900, 2950, 3050, 3150, 3250],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Nombre d\'élèves' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'SMS envoyés' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+            
+            // Graphique Répartition
+            const ctx2 = document.getElementById('chartRepartition').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: statsEcoles.map(e => e.nom),
+                    datasets: [{
+                        data: statsEcoles.map(e => e.eleves),
+                        backgroundColor: ['#f97316', '#3b82f6', '#10b981', '#fbbf24']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Graphique Top Écoles
+            const ctx3 = document.getElementById('chartTopEcoles').getContext('2d');
+            const sortedEcoles = [...statsEcoles].sort((a, b) => b.eleves - a.eleves);
+            
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: sortedEcoles.map(e => e.nom),
+                    datasets: [{
+                        label: 'Nombre d\'élèves',
+                        data: sortedEcoles.map(e => e.eleves),
+                        backgroundColor: '#f97316'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        // ============ EXPORT ============
+        function exportPDF() {
+            showToast('Export PDF en cours...', 'info');
+            setTimeout(() => {
+                showToast('Rapport PDF généré avec succès !', 'success');
+            }, 1500);
+        }
+        
+        function exportExcel() {
+            showToast('Export Excel en cours...', 'info');
+            setTimeout(() => {
+                showToast('Fichier Excel généré avec succès !', 'success');
+            }, 1500);
+        }
+        
+        // ============ INIT ============
+        loadTableComparatif();
+        loadCharts();
+    </script>
+</body>
+</html>
